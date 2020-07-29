@@ -17,7 +17,7 @@ Code constraints from https://github.com/OhioHealth/kata-babysitter
 
 This kata simulates a babysitter(me or someone else) working and getting paid for one night.  The rules are as follows:
 
-Baby-sitter shift and p1ay rules:
+Baby-sitter shift and pay rules:
 - starts no earlier than 5:00PM
 - leaves no later than 4:00AM
 - gets paid $12/hour from start-time to bedtime
