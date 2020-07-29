@@ -9,6 +9,9 @@
 [Running tests]
 - can be run in editor automatically by going to src/test and running the classes tests. 
 
+[Baby-Sitter Kata Services Submission Form]
+- Please note that auto refreshing is not enabled and you will have to refresh the form manually to input new values!
+
 ## Description of kata
 Code constraints from https://github.com/OhioHealth/kata-babysitter 
 
