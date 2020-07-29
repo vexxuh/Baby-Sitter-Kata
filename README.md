@@ -52,7 +52,7 @@ nightly earnings.
 ## Problem Assumptions
 - Since this problem is a more of a "simulation" of sorts I am going to assume the following:
     - My clients, or the child's parents, are going to have the child go to bed before or at 12:00am
-    - The child will not go to bed before I start my shift
+    - The child will not go to bed before I start my shift and will not go to bed before I end my shift
 - Please Note: that making this assumption changes the problem such that I only have to deal with three base
 time intervals [start-time(>=5:00pm) - bedtime(<=12:00am)], [bedtime(<=12:00am) - midnight(=12:00)], 
 and [midnight(=12:00am) - end-time(<=4:00am)].
