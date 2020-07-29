@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Baby-Sitter Work Form</title>
+        <style>
+            label {
+                display: inline-block;
+                width: 200px;
+                margin: 5px;
+                text-align: left;
+            }
+        </style>
+    </head>
+        <div align="center">
+            <h1>Baby-Sitter Work Form</h1>
+            <h2>Please enter whole numbers in military time (i.e. 5:00pm = 17)</h2>
+            <h3>You will not get your pay check if you don't!</h3>
+            <form action ="#" th:action="@{/workform}" th:object="${babySitterWorkSubmissionForm}" method="post">
+                <label>Shift Start-time:</label>
+                <input type="text" th:field="*{ShiftStartTime}"/><br/>
+                <label>Shift End-time:</label>
+                <input type="text" th:field="*{ShiftEndTime}"/><br/>
+                <label>Child's Bedtime</label>
+                <input type="text" th:field="*{ChildBedTime}"/><br/>
+
+                <button type="submit">Get Your Total PayCheck!</button>
+            </form>
+        </div>
+</html>
