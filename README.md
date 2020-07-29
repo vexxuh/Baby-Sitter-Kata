@@ -1,10 +1,18 @@
 # Baby-sitter Kata - Ohio Health
-**[Description of how to download/clone and run the code will go here.]**
+[How to install]
+- fork or clone the github repository
+- then use eclipse or intellj to import the project into the editor and import it as a gradle project
+[How to run solution]
+- go to the main class called BabySitterKataApplication and run the main method.
+- then go to http://localhost:9090 to view the UI processes
+
+[Running tests]
+- can be run in editor automatically by going to src/test and running the classes tests. 
 
 ## Description of kata
-Taken from https://gist.github.com/jameskbride/5482722. (Preservation fork here: https://gist.github.com/jduffey/dd68b22689713ab575d57b2119949f8c)
+Code constraints from https://github.com/OhioHealth/kata-babysitter 
 
-This kata simulates a babysitter(me) working and getting paid for one night.  The rules are as follows:
+This kata simulates a babysitter(me or someone else) working and getting paid for one night.  The rules are as follows:
 
 Baby-sitter shift and p1ay rules:
 - starts no earlier than 5:00PM
@@ -43,7 +51,8 @@ nightly earnings.
  
 ## Problem Assumptions
 - Since this problem is a more of a "simulation" of sorts I am going to assume the following:
-    - My clients, or the child's parents, are going to have the child go to bed before or at 12:00am    
+    - My clients, or the child's parents, are going to have the child go to bed before or at 12:00am
+    - The child will not go to bed before I start my shift and will not go to bed before I end my shift
 - Please Note: that making this assumption changes the problem such that I only have to deal with three base
 time intervals [start-time(>=5:00pm) - bedtime(<=12:00am)], [bedtime(<=12:00am) - midnight(=12:00)], 
 and [midnight(=12:00am) - end-time(<=4:00am)].
