@@ -1,10 +1,18 @@
 # Baby-sitter Kata - Ohio Health
-**[Description of how to download/clone and run the code will go here.]**
+[How to install]
+- fork or clone the github repository
+- then use eclipse or intellj to import the project into the editor and import it as a gradle project
+[How to run solution]
+- go to the main class called BabySitterKataApplication and run the main method.
+- then go to http://localhost:9090 to view the UI processes
+
+[Running tests]
+- can be run in editor automatically by going to src/test and running the classes tests. 
 
 ## Description of kata
-Taken from https://gist.github.com/jameskbride/5482722. (Preservation fork here: https://gist.github.com/jduffey/dd68b22689713ab575d57b2119949f8c)
+Code constraints from https://github.com/OhioHealth/kata-babysitter 
 
-This kata simulates a babysitter(me) working and getting paid for one night.  The rules are as follows:
+This kata simulates a babysitter(me or someone else) working and getting paid for one night.  The rules are as follows:
 
 Baby-sitter shift and p1ay rules:
 - starts no earlier than 5:00PM
