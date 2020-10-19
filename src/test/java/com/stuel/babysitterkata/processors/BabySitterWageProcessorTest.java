@@ -39,40 +39,7 @@ class BabySitterWageProcessorTest {
                 "The end-time you have entered is not a valid end-time, please enter a new end-time");
     }
 
-    @Test
-    void userErrorOutOfRangeDataForTotalPayCalculatorOfInvalidBedTimeBeforeStartTime() {
-        int startTime = 18;
-        int endTime = 4;
-        int bedTime = 17; // bed time is before the start time
-        String errorMessageForInvalidBedTime =
-                wageProcessor.totalPayCalculator(startTime, endTime, bedTime);
-        assertEquals(errorMessageForInvalidBedTime,
-                "The bedtime you have entered is not a valid bedtime, please enter the correct bedtime");
-    }
-
-    @Test
-    void userErrorOutOfRangeDataForTotalPayCalculatorOfInvalidBedTimeAfterMidnight() {
-        int startTime = 18;
-        int endTime = 4;
-        int bedTime = 1; // bed time is before the start time
-        String errorMessageForInvalidBedTime =
-                wageProcessor.totalPayCalculator(startTime, endTime, bedTime);
-        assertEquals(errorMessageForInvalidBedTime,
-                "The bedtime you have entered is not a valid bedtime, please enter the correct bedtime");
-    }
-
-    @Test
-    void boundsRulesForAllValuesTest() {
-        int startTime = 17; //earliest start time
-        int endTime = 4; // latest the shift can run
-        int bedTime = 24; // latest time the child can go to bed
-        String errorMessageForBeforeAllowedStartTime =
-                wageProcessor.totalPayCalculator(startTime, endTime, bedTime);
-        assertEquals(errorMessageForBeforeAllowedStartTime,
-                "148");
-    }
-
-    @Test
+     @Test
     void testRandomValues1() {
         int startTime = 19;
         int endTime = 1;

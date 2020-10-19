@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Component
 public class BabySitterWageProcessor {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(BabySitterWageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BabySitterWageProcessor.class);
 
     /**
      * Calculates the PayCheckAmount value for the passed BabySitterWorkSubmissionForm
@@ -53,28 +53,18 @@ public class BabySitterWageProcessor {
      * @param endTime
      *      the time the baby-sitter shift ends
      * @param bedTime
-     *      the time the child will go to bed: must be >=0:00 or midnight
+     *      the time the child will go to bed
      * @return
      *      String value representing the total amount to be paid
      */
-    public String totalPayCalculator(int startTime, int endTime, int bedTime) {
+    public static String totalPayCalculator(int startTime, int endTime, int bedTime) {
 
         ///////////////////////////////
         //convention defining principles
         ///////////////////////////////
-
-        // this creates the convention that a new days time is greater than 24 hours so a shift's
-        // max length is 28 or 4:00 am the next day
-        int endTimeConventionValue = endTime;
-        if(endTime <= 4) {
-            endTimeConventionValue = endTime + 24;
-        }
-        // if the user enters 0 for midnight then change that value to 24 to keep the convention
-        // or if the value is set to be after midnight then make sure to add the value to keep convention
-        int bedTimeConventionValue = bedTime;
-        if(bedTime == 0 || bedTime <= 4){
-            bedTimeConventionValue = 24 + bedTime;
-        }
+        int endTimeConventionValue = getTimeConventionValue(endTime);
+        int bedTimeConventionValue = getTimeConventionValue(bedTime);
+        int startTimeConventionValue = getTimeConventionValue(startTime);
 
         /////////////////////////////////////
         // bounds check for allowed intervals
@@ -82,52 +72,83 @@ public class BabySitterWageProcessor {
 
         // if the start-time is before the allowed start time then return a string to notify the user
         // that a correction needs to be made to the start-time value
-        if(startTime < 17) {
+        if(startTimeConventionValue < 17) {
             LOGGER.error("Invalid start time: " + startTime);
             return "The start-time that was entered is not a valid start-time, please enter a new start-time";
         }
         // if the end-time is after the allowed end time then return a string to notify the user
-        // that a correction needs to be made to the end-time value
-        if(endTimeConventionValue > 28 || endTimeConventionValue < bedTimeConventionValue) {
+        // that a correction needs to be made to the end-time value and if the bedTime
+        if(endTimeConventionValue > 28 || endTimeConventionValue < startTime) {
             LOGGER.error("Invalid end time: " + endTime);
             return "The end-time you have entered is not a valid end-time, please enter a new end-time";
         }
-        // if the child's bedtime is after midnight then return a string to notify the user the input is incorrect
-        if(bedTimeConventionValue < startTime || bedTimeConventionValue > 24) {
-            LOGGER.error("Invalid bedtime: " + bedTime);
-            return "The bedtime you have entered is not a valid bedtime, please enter the correct bedtime";
-        }
-
         ////////////////////
         // wage calculations
         ////////////////////
 
-        // get the difference between each time interval that is possible
-        long startTimeToBedTimeDifference = bedTimeConventionValue - startTime;
-        long bedTimeToMidnightDifference = 0;
-        long midnightToEndTimeDifference = 0;
-        // if the end time is less than midnight then..
-        if(endTimeConventionValue <= 24) {
-            // .. as long as its end time is not equals to the bed time the subtract the endtime and bed time to get the
-            // difference
-            if(endTimeConventionValue != bedTimeConventionValue) {
-                bedTimeToMidnightDifference = endTimeConventionValue - bedTimeConventionValue;
+        // There are three different if cases that look at the bed time. If the bedtime is before the start-time,
+        // if the bedtime is between the start-time and the end-time, or if the bedtime is after the end-time
+        long totalShiftPay = 0;
+
+        if(startTimeConventionValue < 24) {
+            if (bedTimeConventionValue <= startTimeConventionValue) {
+                // if the end time is before 24 hours the just multiply the difference of start and end-time to the rate
+                if (endTimeConventionValue <= 24) {
+                    totalShiftPay = (endTimeConventionValue - startTimeConventionValue) * 8;
+                    // otherwise, get the start-time to midnight rate then get the midnight to end-time rate
+                } else {
+                    totalShiftPay = ((24 - startTimeConventionValue) * 8) + ((endTimeConventionValue - 24) * 16);
+                }
             }
-        // otherwise if the bedtime is after midnight then..
-        } else {
-            // .. subtract the difference from midnight from bed time to get the hour payed
-            bedTimeToMidnightDifference = 24 - bedTimeConventionValue;
-            // then subtract the difference from midnight to end of shift time to get the hours to be payed
-            midnightToEndTimeDifference = endTimeConventionValue - 24;
+
+            if (bedTimeConventionValue >= endTimeConventionValue) {
+                if (endTimeConventionValue <= 24) {
+                    totalShiftPay = (endTimeConventionValue - startTimeConventionValue) * 12;
+                } else {
+                    totalShiftPay = ((24 - startTimeConventionValue) * 12) + ((endTimeConventionValue - 24) * 16);
+                }
+            }
+
+            if (startTimeConventionValue < bedTimeConventionValue && bedTimeConventionValue < endTimeConventionValue) {
+                if (endTimeConventionValue <= 24) {
+                    totalShiftPay = ((bedTimeConventionValue - startTimeConventionValue) * 12) +
+                            ((endTimeConventionValue - bedTimeConventionValue) * 8);
+                } else if (bedTimeConventionValue > 24) {
+                    totalShiftPay = ((24 - startTimeConventionValue) * 12) + ((endTimeConventionValue - 24) * 16);
+                } else if (bedTimeConventionValue <= 24 && endTimeConventionValue > 24) {
+                    totalShiftPay = ((bedTimeConventionValue - startTimeConventionValue) * 12) +
+                            ((24 - bedTimeConventionValue) * 8) + ((endTimeConventionValue - 24) * 16);
+                }
+            }
+        } else if(startTimeConventionValue >= 24) {
+            totalShiftPay = ((endTimeConventionValue - startTimeConventionValue) * 16);
         }
-        // multiply the differences by the rate that is earned for each interval
-        long startToBedAmount = startTimeToBedTimeDifference * 12L;
-        long bedToMidnightAmount = bedTimeToMidnightDifference * 8L;
-        long midnightToEndAmount = midnightToEndTimeDifference * 16L;
-
-        // then add all of the wage intervals together to get the total amount paid for the shift
-        long totalShiftPay = startToBedAmount + bedToMidnightAmount + midnightToEndAmount;
-
         return totalShiftPay + "";
+    }
+
+    /**
+     * Establishes that the convention of over a day in ints is something that is greater than 24. So 1 am on the same
+     * shift would be 25 hours.
+     *
+     * IMPORTANT: This method is just a cleaning tool to make sure that the user data is being correctly calculated
+     * meaning that the user will enter a value that is something like 4 am for shift end-time. Thus the way to look at
+     * 4 am, and not worry about negatives and all that silly stuff, is to just add 24 to the total time so 24 + 4 = 28.
+     * meaning that the hour that is currently is in the convention is 28 hours.
+     * @param nonConventionTime
+     *          The time that needs to be converted to conventional time units
+     * @return
+     *      an int that follows the int convention described above
+     */
+    public static int getTimeConventionValue(int nonConventionTime) {
+        int conventionTimeValue = nonConventionTime;
+        if(nonConventionTime <= 4) {
+            conventionTimeValue = 24 + nonConventionTime;
+        }
+        return conventionTimeValue;
+    }
+
+    public static void main(String[] args) {
+        String totalpay = totalPayCalculator(17, 24, 17);
+        System.out.println(totalpay);
     }
 }
