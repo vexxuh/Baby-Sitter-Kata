@@ -57,7 +57,7 @@ public class BabySitterWageProcessor {
      * @return
      *      String value representing the total amount to be paid
      */
-    public static String totalPayCalculator(int startTime, int endTime, int bedTime) {
+    public String totalPayCalculator(int startTime, int endTime, int bedTime) {
 
         ///////////////////////////////
         //convention defining principles
@@ -92,33 +92,16 @@ public class BabySitterWageProcessor {
 
         if(startTimeConventionValue < 24) {
             if (bedTimeConventionValue <= startTimeConventionValue) {
-                // if the end time is before 24 hours the just multiply the difference of start and end-time to the rate
-                if (endTimeConventionValue <= 24) {
-                    totalShiftPay = (endTimeConventionValue - startTimeConventionValue) * 8;
-                    // otherwise, get the start-time to midnight rate then get the midnight to end-time rate
-                } else {
-                    totalShiftPay = ((24 - startTimeConventionValue) * 8) + ((endTimeConventionValue - 24) * 16);
-                }
+                totalShiftPay = getPayForBedTimeBeforeStartTime(startTimeConventionValue, endTimeConventionValue);
             }
 
             if (bedTimeConventionValue >= endTimeConventionValue) {
-                if (endTimeConventionValue <= 24) {
-                    totalShiftPay = (endTimeConventionValue - startTimeConventionValue) * 12;
-                } else {
-                    totalShiftPay = ((24 - startTimeConventionValue) * 12) + ((endTimeConventionValue - 24) * 16);
-                }
+                totalShiftPay = getPayForBedTimeAfterEndTime(startTimeConventionValue, endTimeConventionValue);
             }
 
             if (startTimeConventionValue < bedTimeConventionValue && bedTimeConventionValue < endTimeConventionValue) {
-                if (endTimeConventionValue <= 24) {
-                    totalShiftPay = ((bedTimeConventionValue - startTimeConventionValue) * 12) +
-                            ((endTimeConventionValue - bedTimeConventionValue) * 8);
-                } else if (bedTimeConventionValue > 24) {
-                    totalShiftPay = ((24 - startTimeConventionValue) * 12) + ((endTimeConventionValue - 24) * 16);
-                } else if (bedTimeConventionValue <= 24 && endTimeConventionValue > 24) {
-                    totalShiftPay = ((bedTimeConventionValue - startTimeConventionValue) * 12) +
-                            ((24 - bedTimeConventionValue) * 8) + ((endTimeConventionValue - 24) * 16);
-                }
+                totalShiftPay = getPayForBedTimeBetweenStartAndEndTime(startTimeConventionValue, endTimeConventionValue,
+                                                                        bedTimeConventionValue);
             }
         } else if(startTimeConventionValue >= 24) {
             totalShiftPay = ((endTimeConventionValue - startTimeConventionValue) * 16);
@@ -139,7 +122,7 @@ public class BabySitterWageProcessor {
      * @return
      *      an int that follows the int convention described above
      */
-    public static int getTimeConventionValue(int nonConventionTime) {
+    public int getTimeConventionValue(int nonConventionTime) {
         int conventionTimeValue = nonConventionTime;
         if(nonConventionTime <= 4) {
             conventionTimeValue = 24 + nonConventionTime;
@@ -147,8 +130,68 @@ public class BabySitterWageProcessor {
         return conventionTimeValue;
     }
 
-    public static void main(String[] args) {
-        String totalpay = totalPayCalculator(17, 24, 17);
-        System.out.println(totalpay);
+    /**
+     * gets the pay for when the child goes to bed before the sitter, or just as the sitter arives
+     * @param startTimeConventionValue
+     *      start-time in convention format
+     * @param endTimeConventionValue
+     *      end-time in convention format
+     * @return
+     *      pay for a bedtime that is before or equal to the start time
+     */
+    private int getPayForBedTimeBeforeStartTime(int startTimeConventionValue, int endTimeConventionValue) {
+        int totalShiftPay = 0;
+        if (endTimeConventionValue <= 24) {
+            totalShiftPay = (endTimeConventionValue - startTimeConventionValue) * 8;
+            // otherwise, get the start-time to midnight rate then get the midnight to end-time rate
+        } else {
+            totalShiftPay = ((24 - startTimeConventionValue) * 8) + ((endTimeConventionValue - 24) * 16);
+        }
+        return totalShiftPay;
+    }
+
+    /**
+     * gets the pay for when the child goes to bed after the sitter leaves
+     * @param startTimeConventionValue
+     *      start-time in convention format
+     * @param endTimeConventionValue
+     *      end-time in convention format
+     * @return
+     *      pay for a bedtime that is after the end-time
+     */
+    private int getPayForBedTimeAfterEndTime(int startTimeConventionValue, int endTimeConventionValue) {
+        int totalShiftPay = 0;
+        if (endTimeConventionValue <= 24) {
+            totalShiftPay = (endTimeConventionValue - startTimeConventionValue) * 12;
+        } else {
+            totalShiftPay = ((24 - startTimeConventionValue) * 12) + ((endTimeConventionValue - 24) * 16);
+        }
+        return totalShiftPay;
+    }
+
+    /**
+     * gets the pay for a bedtime that is between the start and end time
+     * @param startTimeConventionValue
+     *      start-time in convention format
+     * @param endTimeConventionValue
+     *      end-time in convention format
+     * @param bedTimeConventionValue
+     *      bedtime in convention format
+     * @return
+     *      pay for a bedtime that is between the start and end-times
+     */
+    private int getPayForBedTimeBetweenStartAndEndTime(int startTimeConventionValue, int endTimeConventionValue,
+                                                       int bedTimeConventionValue) {
+        int totalShiftPay = 0;
+        if (endTimeConventionValue <= 24) {
+            totalShiftPay = ((bedTimeConventionValue - startTimeConventionValue) * 12) +
+                    ((endTimeConventionValue - bedTimeConventionValue) * 8);
+        } else if (bedTimeConventionValue > 24) {
+            totalShiftPay = ((24 - startTimeConventionValue) * 12) + ((endTimeConventionValue - 24) * 16);
+        } else if (bedTimeConventionValue <= 24 && endTimeConventionValue > 24) {
+            totalShiftPay = ((bedTimeConventionValue - startTimeConventionValue) * 12) +
+                    ((24 - bedTimeConventionValue) * 8) + ((endTimeConventionValue - 24) * 16);
+        }
+        return totalShiftPay;
     }
 }

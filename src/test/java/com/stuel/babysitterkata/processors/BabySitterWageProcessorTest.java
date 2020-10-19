@@ -106,6 +106,17 @@ class BabySitterWageProcessorTest {
     }
 
     @Test
+    void testRandomValues7() {
+        int startTime = 19;
+        int endTime = 3;
+        int bedTime = 5;
+        String value =
+                wageProcessor.totalPayCalculator(startTime, endTime, bedTime);
+        assertEquals(value,
+                "88");
+    }
+
+    @Test
     void userErrorProcessPayTestInvalidInput(){
         BabySitterWorkSubmissionForm expectForm =
                 new BabySitterWorkSubmissionForm();
